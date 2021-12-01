@@ -198,7 +198,7 @@
 	"Discharges a premise of the shape: Prem IMPLIES Concl and Prem is easily provable."
 	"The premise was trivial, it was discharged."
 )
-(defstep for-alpha ()
+(defstep for-alpha (&key lazy?)
 	(then
 		(if (and (null (fetch "alpha")) (null (fetch-hidden "alpha")))
 			(then
@@ -208,26 +208,8 @@
 					((
 						then(eta-alpha)(replace alpha tran :dir rl)(assert tran)(with-labels(flatten tran)(("pre" "eff")))(hide alpha)
 						(comment "Ready to prove this case: transition is expanded w.r.t. alpha")
-						(trivial)
-					))
-				)
-			)
-			(then (let (( msg (shout "Alpha are already part of the proof.") )) (skip-msg msg :force-printing? t) ) (fail) )
-		)
-	)
-	"Adds the disjunction of alpha's values as an antecedent formula."
-	"Alpha values are now considered."
-)
-(defstep for-alpha-lazy ()
-	(then
-		(if (and (null (fetch "alpha")) (null (fetch-hidden "alpha")))
-			(then
-				(with-labels(typepred alpha)((alpha)));;;-Inserts the antecedent with a name.
-				(act-rewrite) (assert alpha);;;-Now alpha is a disjunction, we try to discharge as many subcases automatically.
-				(branch (split alpha)
-					((
-						then(eta-alpha)(replace alpha tran :dir rl)(assert tran)(with-labels(flatten tran)(("pre" "eff")))(hide alpha)
-						(comment "Ready to prove this case: transition is expanded w.r.t. alpha")
+						
+						(if (null lazy?) (trivial) (postpone))
 					))
 				)
 			)
