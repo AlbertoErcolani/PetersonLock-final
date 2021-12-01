@@ -1,0 +1,27 @@
+%%
+% @theory: actions
+% @author: alberto
+%%
+actions: THEORY
+  BEGIN
+    IMPORTING PROC
+
+    action: datatype with SUBTYPES external, internal BEGIN
+        LockInv(proc: PROC) : LockInv? : external
+        LockRet(proc: PROC) : LockRet? : external
+
+        lock1(proc: PROC) : lock1? : internal
+        lock2(proc: PROC) : lock2? : internal
+        lock3T(proc: PROC) : lock3T? : internal
+        lock3F(proc: PROC) : lock3F? : internal
+        lock4T(proc: PROC) : lock4T? : internal
+        lock4F(proc: PROC) : lock4F? : internal
+
+        unlock1(proc: PROC) : unlock1? : internal
+
+    END action
+
+    action? : TYPE+ = { a :action | external(a) or internal(a) }
+                        CONTAINING LockInv(proc_inst)
+
+  END actions

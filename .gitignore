@@ -1,0 +1,5 @@
+*.summary
+*.prf~
+*.jprf
+*.tccs
+pvsbin/*.pr

@@ -1,0 +1,98 @@
+%%
+% @theory: Peterson
+% @author: alberto
+%%
+Peterson: THEORY
+  BEGIN 
+    IMPORTING PROC, actions, IOA
+
+    PCs: DATATYPE BEGIN
+     pcIdle : pcIdle?
+        pcL1 : pcL1?
+        pcL2 : pcL2?
+        pcL3 : pcL3?
+        pcL4 : pcL4?
+        pcL5 : pcL5?
+        pcL6 : pcL6?
+    END PCs
+
+    cpState : TYPE = [#
+        pc: [ PROC -> PCs ],
+        level : [PROC -> bool],
+        victim : PROC
+    #]
+
+    InitialStatePredicate(s:cpState): bool =
+    FORALL (proc:PROC) :
+      s`pc(proc) = pcIdle AND
+        s`level(proc) = FALSE
+                
+
+    LockPrecondition(name: action?)(s:cpState) : bool =
+      CASES name OF
+        lock3T(proc: PROC) :  NOT s`level(1-proc)=TRUE,
+        lock3F(proc: PROC) :      s`level(1-proc)=TRUE,
+        lock4T(proc: PROC) :  s`victim/=proc,
+        lock4F(proc: PROC) :  s`victim =proc
+        ELSE TRUE
+      ENDCASES
+
+    GetPcForAction(name : action?) : PCs =
+        CASES name OF
+          LockInv(proc:PROC) :    pcIdle,
+
+          lock1(proc: PROC) :     pcL1,
+          lock2(proc: PROC) :     pcL2,
+          lock3T(proc: PROC) :    pcL3,
+          lock3F(proc: PROC) :    pcL3,
+          lock4T(proc: PROC) :    pcL4,
+          lock4F(proc: PROC) :    pcL4,
+
+          unlock1(proc: PROC) :   pcL5,
+
+          LockRet(proc:PROC) :    pcL6
+        ENDCASES
+
+    Precondition(name : action?)(s : cpState) : bool =
+        LockPrecondition(name)(s) AND s`pc( proc(name) ) = GetPcForAction(name)
+
+    GetDstPCForAction(name: action?) : PCs =
+      CASES name OF
+        LockInv(proc:PROC) :    pcL1,
+
+        lock1(proc: PROC) :     pcL2,
+        lock2(proc: PROC) :     pcL3,
+        lock3T(proc: PROC) :    pcL5,
+        lock3F(proc: PROC) :    pcL4,
+        lock4T(proc: PROC) :    pcL5,
+        lock4F(proc: PROC) :    pcL3,
+
+        unlock1(proc: PROC) :   pcL6,
+
+        LockRet(proc:PROC) :    pcIdle
+
+      ENDCASES
+
+    GetEffectForAction(name:action?) (s: (Precondition(name)) ) : cpState =
+      CASES name OF
+        lock1(proc: PROC) :     s WITH [ `level(proc) := true ],
+        lock2(proc: PROC) :     s WITH [ `victim := proc ],
+
+        unlock1(proc: PROC) :   s WITH [ `level(proc) := false ]
+        ELSE s  
+      ENDCASES
+
+    CO_IOA : TYPE = IOA[cpState, action?].IOA
+
+    Effect(name:action?)( s:(Precondition(name)) ) : cpState =
+        GetEffectForAction(name)(s) WITH [
+            `pc(proc(name)) := GetDstPCForAction(name)
+        ]
+
+    co_ioa_inst: CO_IOA = (#
+        initial := InitialStatePredicate,
+        pre := Precondition,
+        eff := Effect
+    #)
+
+  END Peterson

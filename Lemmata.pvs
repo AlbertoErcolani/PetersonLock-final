@@ -1,0 +1,30 @@
+%%
+% @theory: Lemmata
+% @author: alberto
+%%
+Lemmata: THEORY
+  BEGIN 
+    IMPORTING
+      Peterson,
+      invariant[Peterson.cpState, action?],
+      actions
+    %%%%%%%%%%%%%%%%%
+    ActivityInvariant(s:Peterson.cpState) : bool  =
+      FORALL (p:PROC) :
+          s`pc(p) = pcL2 OR s`pc(p) = pcL3 OR
+          s`pc(p) = pcL4 OR s`pc(p) = pcL5
+        IFF
+          s`level(p) = true
+    inv_1 : LEMMA
+      invariant(co_ioa_inst, ActivityInvariant)
+    %%%%%%%%%%%%%%%%%
+    VictimInvariant2(s:Peterson.cpState) : bool =
+      FORALL (p,q:PROC) : 
+        s`pc(p)=pcL5 AND
+        (s`pc(q)=pcL3 OR s`pc(q)=pcL4) AND
+        p/=q
+          IMPLIES s`victim/=p
+    inv_2 : LEMMA
+      invariant(co_ioa_inst, VictimInvariant2)
+    %%%%%%%%%%%%%%%%%
+  END Lemmata
