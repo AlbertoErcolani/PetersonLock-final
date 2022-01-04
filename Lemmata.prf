@@ -29,8 +29,7 @@
     (GetPcForAction const-decl "PCs" Peterson nil)
     (LockPrecondition const-decl "bool" Peterson nil)
     (LockInv? adt-recognizer-decl "[action -> boolean]" actions nil)
-    (alpha skolem-const-decl "action?" Lemmata nil)
-    (action_LockInv_eta formula-decl nil actions nil)
+    nil (action_LockInv_eta formula-decl nil actions nil)
     (LockRet? adt-recognizer-decl "[action -> boolean]" actions nil)
     (action_LockRet_eta formula-decl nil actions nil)
     (lock1? adt-recognizer-decl "[action -> boolean]" actions nil)
@@ -113,16 +112,13 @@
                                     (("1"
                                       (in-fact "s0`level(q)")
                                       (("1"
-                                        (in-fact "s0`level(p)")
+                                        (in-fact "s0`level(p)" (-3 -4))
                                         (("1"
-                                          (delete -3 -4)
+                                          (in-fact "s0`victim=p")
                                           (("1"
-                                            (in-fact "s0`victim=p")
-                                            (("1"
-                                              (in-fact
-                                               "proc(alpha)=0 OR proc(alpha)=1")
-                                              (("1" (grind) nil nil))
-                                              nil))
+                                            (in-fact
+                                             "proc(alpha)=0 OR proc(alpha)=1")
+                                            (("1" (grind) nil nil))
                                             nil))
                                           nil))
                                         nil))
@@ -156,6 +152,7 @@
     (GetPcForAction const-decl "PCs" Peterson nil)
     (LockPrecondition const-decl "bool" Peterson nil)
     (unlock1? adt-recognizer-decl "[action -> boolean]" actions nil)
+    (alpha skolem-const-decl "action?" Lemmata nil)
     (action_unlock1_eta formula-decl nil actions nil)
     (lock4F? adt-recognizer-decl "[action -> boolean]" actions nil)
     (action_lock4F_eta formula-decl nil actions nil)
